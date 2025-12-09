@@ -1,48 +1,43 @@
 import java.util.Random;
 
-class Alarm {
-    public void operateAlarm(int waterLevel) {
+class WaterLevelObserver {
+    public void update(int waterLevel) {
+
+    }
+}
+
+class Alarm extends WaterLevelObserver {
+    public void update(int waterLevel) {
         System.out.println(waterLevel > 50 ? "Alarm On" : "Alarm OFF");
     }
 }
-class Splitter {
-    public void split(int waterLevel) {
+
+class Splitter extends WaterLevelObserver {
+    public void update(int waterLevel) {
         System.out.println(waterLevel > 50 ? "Splitter On" : "Splitter OFF");
     }
 }
 
-class Display {
-    public void display(int waterLevel) {
+class Display extends WaterLevelObserver {
+    public void update(int waterLevel) {
         System.out.println("Water Level : " + waterLevel);
     }
 }
 
-class SMSSender {
-    public void SMSsending(int waterLevel) {
+class SMSSender extends WaterLevelObserver {
+    public void update(int waterLevel) {
         System.out.println("sending : " + waterLevel);
     }
 }
 
 class ControlRoom {
     private int waterLevel;
-    private Alarm alarm;
-    private Display display;
-    private SMSSender smsSender;
-    private Splitter splitter;
 
-    public void addAlarm(Alarm alarm) {
-        this.alarm = alarm;
-    }
+    private WaterLevelObserver[] observerArray = new WaterLevelObserver[100];
+    private int nextIndex;
 
-    public void addDisplay(Display display) {
-        this.display = display;
-    }
-
-    public void addSMSsender(SMSSender smsSender) {
-        this.smsSender = smsSender;
-    }
-    public void addSplitter(Splitter splitter) {
-        this.splitter = splitter;
+    public void addWaterLevelObserver(WaterLevelObserver ob) {
+        observerArray[nextIndex++] = ob;
     }
 
     public void setWaterLevel(int waterLevel) {
@@ -53,20 +48,19 @@ class ControlRoom {
     }
 
     public void notifyObject() {
-        alarm.operateAlarm((waterLevel));
-        display.display(waterLevel);
-        smsSender.SMSsending(waterLevel);
-        splitter.split(waterLevel);
+        for (int i = 0; i < nextIndex; i++) {
+            observerArray[i].update(waterLevel);
+        }
     }
 }
 
 public class Demo {
     public static void main(String[] args) {
         ControlRoom conRoom = new ControlRoom();
-        conRoom.addAlarm(new Alarm());
-        conRoom.addDisplay(new Display());
-        conRoom.addSMSsender(new SMSSender());
-        conRoom.addSplitter(new Splitter());
+        conRoom.addWaterLevelObserver(new Alarm());
+        conRoom.addWaterLevelObserver(new Splitter());
+        conRoom.addWaterLevelObserver(new Display());
+        conRoom.addWaterLevelObserver(new SMSSender());
 
         Random r = new Random();
         while (true) {
