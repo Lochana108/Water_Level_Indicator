@@ -5,6 +5,11 @@ class Alarm {
         System.out.println(waterLevel > 50 ? "Alarm On" : "Alarm OFF");
     }
 }
+class Splitter {
+    public void split(int waterLevel) {
+        System.out.println(waterLevel > 50 ? "Splitter On" : "Splitter OFF");
+    }
+}
 
 class Display {
     public void display(int waterLevel) {
@@ -23,6 +28,7 @@ class ControlRoom {
     private Alarm alarm;
     private Display display;
     private SMSSender smsSender;
+    private Splitter splitter;
 
     public void addAlarm(Alarm alarm) {
         this.alarm = alarm;
@@ -34,6 +40,9 @@ class ControlRoom {
 
     public void addSMSsender(SMSSender smsSender) {
         this.smsSender = smsSender;
+    }
+    public void addSplitter(Splitter splitter) {
+        this.splitter = splitter;
     }
 
     public void setWaterLevel(int waterLevel) {
@@ -47,6 +56,7 @@ class ControlRoom {
         alarm.operateAlarm((waterLevel));
         display.display(waterLevel);
         smsSender.SMSsending(waterLevel);
+        splitter.split(waterLevel);
     }
 }
 
@@ -56,6 +66,7 @@ public class Demo {
         conRoom.addAlarm(new Alarm());
         conRoom.addDisplay(new Display());
         conRoom.addSMSsender(new SMSSender());
+        conRoom.addSplitter(new Splitter());
 
         Random r = new Random();
         while (true) {
