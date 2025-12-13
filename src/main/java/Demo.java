@@ -89,12 +89,16 @@ class SMSSender extends JFrame implements WaterLevelObserver {
     }
 }
 
-class WaterLevelObserverble {
+interface WaterLevelObserverbleInterface {
+    public void setWaterLevel(int waterLevel);
+}
+
+class WaterLevelObserverble implements WaterLevelObserverbleInterface {
     private int waterLevel;
 
     private ArrayList<WaterLevelObserver> observerList = new ArrayList<>();
 
-    public void addWaterLevelObserver(WaterLevelObserver ob){
+    public void addWaterLevelObserver(WaterLevelObserver ob) {
         observerList.add(ob);
     }
 
@@ -114,26 +118,21 @@ class WaterLevelObserverble {
 
 class WaterTank extends JFrame {
     private JSlider waterLevelSlider;
-    private WaterLevelObserverble waterLevelObserverble;
+    private WaterLevelObserverbleInterface waterLevelObserverbleInterface;
 
-    WaterTank() {
+    WaterTank(WaterLevelObserverbleInterface waterLevelObserverbleInterface) {
+        this.waterLevelObserverbleInterface = waterLevelObserverbleInterface;
         setTitle("Water Tank");
         setSize(300, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
 
-        waterLevelObserverble = new WaterLevelObserverble();
-        waterLevelObserverble.addWaterLevelObserver(new Alarm());
-        waterLevelObserverble.addWaterLevelObserver(new Splitter());
-        waterLevelObserverble.addWaterLevelObserver(new Display());
-        waterLevelObserverble.addWaterLevelObserver(new SMSSender());
-
         waterLevelSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
         waterLevelSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int waterLevel = waterLevelSlider.getValue();
-                waterLevelObserverble.setWaterLevel(waterLevel);
+                waterLevelObserverbleInterface.setWaterLevel(waterLevel);
             }
         });
         add(waterLevelSlider);
@@ -142,7 +141,13 @@ class WaterTank extends JFrame {
 
 public class Demo {
     public static void main(String[] args) {
-        new WaterTank().setVisible(true);
+        WaterLevelObserverble waterLevelObserverble = new WaterLevelObserverble();
+        waterLevelObserverble.addWaterLevelObserver(new Alarm());
+        waterLevelObserverble.addWaterLevelObserver(new Splitter());
+        waterLevelObserverble.addWaterLevelObserver(new Display());
+        waterLevelObserverble.addWaterLevelObserver(new SMSSender());
+
+        new WaterTank(waterLevelObserverble).setVisible(true);
 
     }
 }
